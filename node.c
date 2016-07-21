@@ -3,51 +3,35 @@
 #include "dev/leds.h"
 #include "networking/networking.h"
 
-/*---------------------------------------------------------------------------*/
-PROCESS(data_sampler_process, "Data sampler process");
-PROCESS(udp_client_process, "UDP client process");
-AUTOSTART_PROCESSES(&data_sampler_process, &udp_client_process);
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(data_sampler_process, ev, data)
+PROCESS(main_proc, "Main Process");
+AUTOSTART_PROCESSES(&main_proc);
+
+PROCESS_THREAD(main_proc, ev, data)
 {
   // Process data declaration
-  static struct etimer data_timer;
+  static struct etimer timer;
 
   PROCESS_BEGIN();
+
+  if(conn_set_up() == -1) {
+	  PROCESS_EXIT();
+  }
 
   // Set event timers for template and data packet creation
-  etimer_set (&data_timer, CLOCK_SECOND * 5);
+  etimer_set (&timer, CLOCK_SECOND * 2);
 
+  while (1) {
 
-  while (1)
-    {
-      PROCESS_WAIT_EVENT();
-      if (etimer_expired (&data_timer))
-	{
+	  PROCESS_WAIT_EVENT();
+      if (etimer_expired (&timer)) {
+
     	  leds_on (LEDS_GREEN);
-    	  	  clock_delay (1000);
-    	  	  leds_off (LEDS_GREEN);
-
+    	  clock_delay (500);
+    	  leds_off (LEDS_GREEN);
     	  send_data();
-	  etimer_reset (&data_timer);
-
-	}
-    }
-
-PROCESS_END();
-}
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(udp_client_process, ev, data)
-{
-  PROCESS_BEGIN();
-
-  if (conn_set_up() == -1)
-    {
-      PROCESS_EXIT();
-    }
-
+    	  etimer_reset (&timer);
+      }
+  }
 
   PROCESS_END();
 }
-/*---------------------------------------------------------------------------*/
-
