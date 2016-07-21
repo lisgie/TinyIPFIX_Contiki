@@ -30,20 +30,7 @@ obj_sky/udp-client-process.o: udp-client-process.c \
  /home/contiki/contiki-2.7/core/./sys/loader.h \
  /home/contiki/contiki-2.7/core/./sys/clock.h \
  /home/contiki/contiki-2.7/core/./sys/energest.h \
- /home/contiki/contiki-2.7/core/./net/uip-ds6.h \
- /home/contiki/contiki-2.7/core/./sys/stimer.h \
- /home/contiki/contiki-2.7/core/./net/uip-nd6.h \
- /home/contiki/contiki-2.7/core/./net/uip-ds6-route.h \
- /home/contiki/contiki-2.7/core/./lib/list.h \
- /home/contiki/contiki-2.7/core/./net/uip-ds6-nbr.h \
- /home/contiki/contiki-2.7/core/./net/nbr-table.h \
- /home/contiki/contiki-2.7/core/./net/rime/rimeaddr.h \
- /home/contiki/contiki-2.7/core/./net/netstack.h \
- /home/contiki/contiki-2.7/core/./net/mac/mac.h \
- /home/contiki/contiki-2.7/core/./dev/radio.h \
- /home/contiki/contiki-2.7/core/./net/mac/rdc.h \
- /home/contiki/contiki-2.7/core/./net/mac/framer.h \
- /home/contiki/contiki-2.7/core/./net/uip-udp-packet.h debug/debug.h \
+ /home/contiki/contiki-2.7/core/./net/uip-udp-packet.h \
  udp-client-process.h
 udp-client-process.c :
  /home/contiki/contiki-2.7/core/./sys/node-id.h :
@@ -77,18 +64,5 @@ udp-client-process.c :
  /home/contiki/contiki-2.7/core/./sys/loader.h :
  /home/contiki/contiki-2.7/core/./sys/clock.h :
  /home/contiki/contiki-2.7/core/./sys/energest.h :
- /home/contiki/contiki-2.7/core/./net/uip-ds6.h :
- /home/contiki/contiki-2.7/core/./sys/stimer.h :
- /home/contiki/contiki-2.7/core/./net/uip-nd6.h :
- /home/contiki/contiki-2.7/core/./net/uip-ds6-route.h :
- /home/contiki/contiki-2.7/core/./lib/list.h :
- /home/contiki/contiki-2.7/core/./net/uip-ds6-nbr.h :
- /home/contiki/contiki-2.7/core/./net/nbr-table.h :
- /home/contiki/contiki-2.7/core/./net/rime/rimeaddr.h :
- /home/contiki/contiki-2.7/core/./net/netstack.h :
- /home/contiki/contiki-2.7/core/./net/mac/mac.h :
- /home/contiki/contiki-2.7/core/./dev/radio.h :
- /home/contiki/contiki-2.7/core/./net/mac/rdc.h :
- /home/contiki/contiki-2.7/core/./net/mac/framer.h :
- /home/contiki/contiki-2.7/core/./net/uip-udp-packet.h debug/debug.h :
+ /home/contiki/contiki-2.7/core/./net/uip-udp-packet.h :
  udp-client-process.h :
