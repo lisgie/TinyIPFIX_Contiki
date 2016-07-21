@@ -1,4 +1,0 @@
-obj_sky/rimestats.o: /home/contiki/contiki-2.7/core/net/rime/rimestats.c \
- /home/contiki/contiki-2.7/core/./net/rime/rimestats.h
-/home/contiki/contiki-2.7/core/net/rime/rimestats.c :
- /home/contiki/contiki-2.7/core/./net/rime/rimestats.h :
