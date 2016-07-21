@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = contiki-node
+CONTIKI_PROJECT = node
 all: $(CONTIKI_PROJECT)
 
 CFLAGS += -ffunction-sections
@@ -11,13 +11,13 @@ UIP_CONF_IPV6=1
 UIP_CONF_IPV6_RPL=1
 
 CONTIKI = /home/contiki/contiki-2.7
-#CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-DEBUG_DIR = debug
 
-PROJECT_SOURCEFILES += udp-client-process.c 
 
 #include $(DEBUG_DIR)/Makefile.debug
 
+NETWORKING_DIR = networking
+
+include $(NETWORKING_DIR)/Makefile.networking
 
 include $(CONTIKI)/Makefile.include

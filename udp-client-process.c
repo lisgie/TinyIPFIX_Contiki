@@ -1,12 +1,3 @@
-/**
- * \file udp-client-process.c
- *
- * \brief This file implements functions used by the UDP client process,
- * 	responsible for setting up the UDP connection and sending TinyIPFIX packets.
- *
- * \author Michael Meister
- */
-
 #include "sys/node-id.h"
 #include "net/uip.h"
 #include "net/uip-udp-packet.h"
