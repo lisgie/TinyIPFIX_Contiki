@@ -1,0 +1,2 @@
+PROJECTDIRS += $(DEBUG_DIR)/
+PROJECT_SOURCEFILES += debug-utils.c
