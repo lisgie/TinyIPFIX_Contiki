@@ -9,9 +9,7 @@
 
 #include "sys/node-id.h"
 #include "net/uip.h"
-#include "net/uip-ds6.h"
 #include "net/uip-udp-packet.h"
-#include "debug/debug.h"
 #include "udp-client-process.h"
 
 /*---------------------------------------------------------------------------*/
@@ -32,7 +30,6 @@ setup_udp_connection ()
   client_conn = udp_new (&server_ipaddr, UIP_HTONS (UDP_SERVER_PORT), NULL);
   if (client_conn == NULL)
     {
-      PRINTF ("No UDP connection available!\n");
       return false;
     }
   udp_bind(client_conn, UIP_HTONS (UDP_CLIENT_PORT));
@@ -45,11 +42,6 @@ send_data_handler ()
 {
   int i;
   char buf[50];
-
-  PRINTF ("Client sending to: ");
-  PRINT6ADDR (&client_conn->ripaddr);
-  PRINTF ("\n");
-  DUMP_BUFFER (data, length);
 
   for(i = 0; i < 50; i++) {
     buf[i] = 'r';
