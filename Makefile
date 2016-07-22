@@ -17,7 +17,9 @@ CONTIKI = /home/contiki/contiki-2.7
 #include $(DEBUG_DIR)/Makefile.debug
 
 NETWORKING_DIR = networking
+HW_MODULE_DIR = hw_module
 
 include $(NETWORKING_DIR)/Makefile.networking
+include $(HW_MODULE_DIR)/Makefile.hw_module
 
 include $(CONTIKI)/Makefile.include
