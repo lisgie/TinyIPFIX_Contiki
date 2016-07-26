@@ -5,3 +5,4 @@ symbols.*
 *.a
 *.map
 .*project
+.settings
