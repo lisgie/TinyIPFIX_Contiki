@@ -21,7 +21,20 @@
 #define E_BIT_LIGHT 1
 #define LEN_LIGHT 2
 
+struct template_rec {
+
+	//the enterprise bit will be the MSB of element_id, to not waste another byte
+	uint16_t element_id;
+	uint16_t field_len;
+	uint32_t enterprise_num;
+
+	void (* sens_val)(uint16_t*);
+};
+
+
 //needs to be accessible from outside
-void init_template();
+struct template_rec init_template();
+
+
 
 #endif /* SKY_H_ */
