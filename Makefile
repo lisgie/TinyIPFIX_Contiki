@@ -10,7 +10,7 @@ WITH_UIP6=1
 UIP_CONF_IPV6=1
 UIP_CONF_IPV6_RPL=1
 
-CONTIKI = /home/contiki/contiki-2.7
+CONTIKI = /home/livio/workspace/contiki-2.7
 
 
 

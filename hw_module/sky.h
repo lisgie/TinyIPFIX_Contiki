@@ -33,8 +33,9 @@ struct template_rec {
 
 
 //needs to be accessible from outside
-struct template_rec init_template();
+struct template_rec *init_template();
 
+void some_function(uint16_t*);
 
 
 #endif /* SKY_H_ */

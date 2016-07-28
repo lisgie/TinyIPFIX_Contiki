@@ -17,10 +17,12 @@ int conn_set_up() {
 	return 0;
 }
 
-void send_data(uint16_t data) {
+void send_data(void *data) {
 
-	uint8_t a = (uint8_t)data;
+	uint8_t a[4];
+	uint32_t len = 4;
 
+	*((uint32_t*)(a)) = *((uint32_t*)(data));
 
-	uip_udp_packet_send(conn_handle, &a, sizeof(a));
+	uip_udp_packet_send(conn_handle, a, len);
 }
