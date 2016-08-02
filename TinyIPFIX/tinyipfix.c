@@ -37,7 +37,7 @@ uint8_t buffer[MAX_MSG_SIZE];
 +--+--+--+--+--+--+--+--+
 */
 
-build_msg_header() {
+/*build_msg_header() {
 
 
 
@@ -61,4 +61,4 @@ build_template_payload() {
 build_data_payload() {
 
 
-}
+}*/

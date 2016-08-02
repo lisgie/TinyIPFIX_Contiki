@@ -2,20 +2,32 @@
 #include "sky.h"
 #include "dev/sht11-sensor.h"
 #include "dev/light-sensor.h"
+#include "dev/battery-sensor.h"
+#include "net/uip.h"
 
 
 struct template_rec set_fields(uint8_t, uint16_t, uint16_t, uint32_t, void(*sens_val)(void*));
 void read_temp(void*);
 void read_humid(void*);
-void read_light(void*);
+void read_light_photo(void*);
+void read_light_total(void*);
+void read_battery(void*);
+void read_time(void*);
+void read_id(void*);
+void read_pull(void*);
 
-struct template_rec sky_rec[NUM_SENSORS];
+struct template_rec sky_rec[NUM_ENTRIES];
 
 struct template_rec *init_template() {
 
 	sky_rec[0] = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
-	sky_rec[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID,&read_humid);
-	sky_rec[2] = set_fields(E_BIT_LIGHT, ELEMENT_ID_LIGHT, LEN_LIGHT, ENTERPRISE_ID_LIGHT,&read_light);
+	sky_rec[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID, &read_humid);
+	sky_rec[2] = set_fields(E_BIT_LIGHT_PHOTO, ELEMENT_ID_LIGHT_PHOTO, LEN_LIGHT_PHOTO, ENTERPRISE_ID_LIGHT_PHOTO, &read_light_photo);
+	sky_rec[3] = set_fields(E_BIT_LIGHT_TOTAL, ELEMENT_ID_LIGHT_TOTAL, LEN_LIGHT_TOTAL, ENTERPRISE_ID_LIGHT_TOTAL, &read_light_total);
+	sky_rec[4] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
+	sky_rec[5] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
+	sky_rec[6] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
+	sky_rec[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_light_total);
 
 	return sky_rec;
 }
@@ -52,10 +64,41 @@ void read_humid(void* humid) {
 	SENSORS_DEACTIVATE(sht11_sensor);
 }
 
-void read_light (void* light_photo) {
+void read_light_photo(void* light_photo) {
 
 	SENSORS_ACTIVATE(light_sensor);
-	(*((uint16_t*)(light_photo))) = light_sensor.value(LIGHT_SENSOR_PHOTOSYNTHETIC);
+	*((uint16_t*)(light_photo)) = light_sensor.value(LIGHT_SENSOR_PHOTOSYNTHETIC);
 	SENSORS_DEACTIVATE(light_sensor);
 }
 
+void read_light_total (void* light_total) {
+
+	SENSORS_ACTIVATE(light_sensor);
+	*((uint16_t*)(light_total)) = light_sensor.value(LIGHT_SENSOR_TOTAL_SOLAR);
+	SENSORS_DEACTIVATE(light_sensor);
+}
+
+void read_battery(void* bat) {
+
+	SENSORS_ACTIVATE(battery_sensor);
+	*((uint16_t*)(bat)) = battery_sensor.value(0);
+	SENSORS_DEACTIVATE(battery_sensor);
+}
+
+void read_time(void* time) {
+
+	*((uint32_t*)(time)) = clock_seconds ();
+}
+
+//last two octets of the MAC address
+void read_id(void* id) {
+
+	*((int16_t*)(id)) = uip_lladdr.addr[6] << 8;
+	*((int16_t*)(id)) |= uip_lladdr.addr[7];
+}
+
+//0 corresponds to push, 1 corresponds to pull
+void read_pull(void *pull) {
+
+	*((uint8_t *)(pull)) = 0;
+}

@@ -20,7 +20,6 @@ PROCESS_THREAD(main_proc, ev, data)
 
   PROCESS_BEGIN();
 
-  init();
   sky_rec = init_template();
 
   if(conn_set_up() == -1) {
