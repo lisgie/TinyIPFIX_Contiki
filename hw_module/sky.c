@@ -1,26 +1,27 @@
 #include <stdint.h>
 #include "sky.h"
 #include "dev/sht11-sensor.h"
+#include "dev/light-sensor.h"
 
 
-struct template_rec set_fields(uint8_t, uint16_t, uint16_t, uint32_t, void(*sens_val)(uint16_t*));
-void read_temp(uint16_t*);
-void read_humid(uint16_t*);
+struct template_rec set_fields(uint8_t, uint16_t, uint16_t, uint32_t, void(*sens_val)(void*));
+void read_temp(void*);
+void read_humid(void*);
+void read_light(void*);
 
-//struct template_rec record[NUM_SENSORS];
-struct template_rec rec;
+struct template_rec sky_rec[NUM_SENSORS];
 
 struct template_rec *init_template() {
 
-	rec = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
-	//record[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID,&read_humid);
-	//record[2] = set_fields(E_BIT_LIGHT, ELEMENT_ID_LIGHT, LEN_LIGHT, ENTERPRISE_ID_LIGHT,&dummy);
+	sky_rec[0] = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
+	sky_rec[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID,&read_humid);
+	sky_rec[2] = set_fields(E_BIT_LIGHT, ELEMENT_ID_LIGHT, LEN_LIGHT, ENTERPRISE_ID_LIGHT,&read_light);
 
-	return &rec;
+	return sky_rec;
 }
 
 struct template_rec set_fields(uint8_t e_bit, uint16_t element_id,
-		uint16_t field_len, uint32_t enterprise_id, void (*sens_val)(uint16_t*)) {
+		uint16_t field_len, uint32_t enterprise_id, void (*sens_val)(void*)) {
 
 	struct template_rec rec;
 
@@ -36,17 +37,25 @@ struct template_rec set_fields(uint8_t e_bit, uint16_t element_id,
 	return rec;
 }
 
-void read_temp(uint16_t* sens_val) {
+void read_temp(void* temp) {
 
 	SENSORS_ACTIVATE(sht11_sensor);
-	*sens_val = sht11_sensor.value(SHT11_SENSOR_TEMP);
+	*((uint16_t*)(temp)) = sht11_sensor.value(SHT11_SENSOR_TEMP);
 	SENSORS_DEACTIVATE(sht11_sensor);
 
 }
 
-void read_humid(uint16_t* sens_val) {
+void read_humid(void* humid) {
 
 	SENSORS_ACTIVATE(sht11_sensor);
-	*sens_val = sht11_sensor.value(SHT11_SENSOR_TEMP);
+	*((uint16_t*)(humid)) = sht11_sensor.value(SHT11_SENSOR_HUMIDITY);
 	SENSORS_DEACTIVATE(sht11_sensor);
 }
+
+void read_light (void* light_photo) {
+
+	SENSORS_ACTIVATE(light_sensor);
+	(*((uint16_t*)(light_photo))) = light_sensor.value(LIGHT_SENSOR_PHOTOSYNTHETIC);
+	SENSORS_DEACTIVATE(light_sensor);
+}
+

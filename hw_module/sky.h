@@ -3,7 +3,7 @@
 
 #define NUM_SENSORS 3
 
-//SHT11 Temperatur Sensor
+//SHT11 Temperature Sensor
 #define ELEMENT_ID_TEMP 0x80A0
 #define ENTERPRISE_ID_TEMP 0xF0AA00AA
 #define E_BIT_TEMP 1
@@ -21,6 +21,10 @@
 #define E_BIT_LIGHT 1
 #define LEN_LIGHT 2
 
+//this is needed as changeable header option for the data sets
+#define EXTENDED_HEADER_SEQ 0
+#define EXTENDED_HEADER_SET_ID 0
+
 struct template_rec {
 
 	//the enterprise bit will be the MSB of element_id, to not waste another byte
@@ -28,14 +32,10 @@ struct template_rec {
 	uint16_t field_len;
 	uint32_t enterprise_num;
 
-	void (* sens_val)(uint16_t*);
+	void (* sens_val)(void*);
 };
-
 
 //needs to be accessible from outside
 struct template_rec *init_template();
-
-void some_function(uint16_t*);
-
 
 #endif /* SKY_H_ */
