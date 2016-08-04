@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef BORDER_ROUTER_IP
 #define BORDER_ROUTER_IP /*TO-DO*/
 #endif
@@ -12,4 +14,4 @@
 
 int conn_set_up();
 
-void send_data();
+void send_data(uint8_t *data, uint16_t len);

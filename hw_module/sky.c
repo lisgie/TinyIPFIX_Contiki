@@ -1,5 +1,6 @@
-#include <stdint.h>
 #include "sky.h"
+#include "../TinyIPFIX/tinyipfix.h"
+
 #include "dev/sht11-sensor.h"
 #include "dev/light-sensor.h"
 #include "dev/battery-sensor.h"
@@ -54,7 +55,6 @@ void read_temp(void* temp) {
 	SENSORS_ACTIVATE(sht11_sensor);
 	*((uint16_t*)(temp)) = sht11_sensor.value(SHT11_SENSOR_TEMP);
 	SENSORS_DEACTIVATE(sht11_sensor);
-
 }
 
 void read_humid(void* humid) {

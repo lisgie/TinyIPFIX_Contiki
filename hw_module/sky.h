@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef SKY_H_
 #define SKY_H_
 
@@ -54,16 +56,6 @@
 //this is needed as changeable header option for the data sets
 #define EXTENDED_HEADER_SEQ 0
 #define EXTENDED_HEADER_SET_ID 0
-
-struct template_rec {
-
-	//the enterprise bit will be the MSB of element_id, to not waste another byte
-	uint16_t element_id;
-	uint16_t field_len;
-	uint32_t enterprise_num;
-
-	void (* sens_val)(void*);
-};
 
 //needs to be globally accessible
 struct template_rec *init_template();
