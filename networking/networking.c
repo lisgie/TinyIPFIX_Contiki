@@ -17,7 +17,7 @@ int conn_set_up() {
 	return 0;
 }
 
-void send_data(uint8_t *data, uint16_t len) {
+void send_msg(uint8_t *data, uint16_t len) {
 
 	uip_udp_packet_send(conn_handle, data, len);
 }

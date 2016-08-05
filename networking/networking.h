@@ -14,4 +14,4 @@
 
 int conn_set_up();
 
-void send_data(uint8_t *data, uint16_t len);
+void send_msg(uint8_t *data, uint16_t len);

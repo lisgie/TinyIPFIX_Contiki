@@ -174,13 +174,13 @@ void build_data_payload(void) {
 	//adjust the sequence number without rebuilding the header!
 	data_seq_num++;
 	if(EXTENDED_HEADER_SEQ == 1) {
-		if(data_seq_num == 65535)
+		if(data_seq_num > 65535)
 			data_seq_num = 0;
 
 		data_buf[2] = (uint8_t)(data_seq_num >> 8);
 		data_buf[3] = (uint8_t)(data_seq_num);
 	} else {
-		if(data_seq_num == 255) {
+		if(data_seq_num > 255) {
 			data_seq_num = 0;
 		}
 		data_buf[2] = (uint8_t)(data_seq_num);
@@ -225,13 +225,7 @@ uint8_t *get_template(void) {
 
 uint8_t *get_data(void) {
 
-	uint8_t i;
 	build_data_payload();
-
-	for(i = 0; i < 100; i++) {
-		printf("0x%02x ", data_buf[i]);
-	}
-	printf("\n\n");
 
 	return data_buf;
 }
