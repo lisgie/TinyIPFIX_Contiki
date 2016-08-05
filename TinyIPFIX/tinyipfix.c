@@ -29,8 +29,9 @@
 
 #define SWITCH_ENDIAN_16(n) (uint16_t)((((uint16_t) (n)) << 8) | (((uint16_t) (n)) >> 8))
 #define SWITCH_ENDIAN_32(n) (((uint32_t)SWITCH_ENDIAN_16(n) << 16) | SWITCH_ENDIAN_16((uint32_t)(n) >> 16))
+#define SWITCH_ENDIAN_64(n) (((uint64_t)SWITCH_ENDIAN_32(n) << 32) | SWITCH_ENDIAN_32((uint64_t)(n) >> 32))
 
-uint16_t build_msg_header(uint16_t set_id, uint16_t length, uint16_t seq_num);
+void build_msg_header(uint8_t *buf, uint16_t set_id, uint16_t length, uint16_t seq_num);
 
 void build_template(void);
 
@@ -41,7 +42,6 @@ uint8_t template_buf[MAX_MSG_SIZE];
 
 uint8_t data_buf[MAX_MSG_SIZE];
 
-uint16_t data_tmp_len;
 uint16_t data_seq_num = 0;
 
 struct template_rec *sensor;
@@ -50,7 +50,6 @@ struct buf_info *instance;
 
 void initialize(void) {
 
-	int i;
 	sensor = init_template();
 
 	//fixed at compile time: template/data header and template payload, only do it once
@@ -59,16 +58,14 @@ void initialize(void) {
 
 }
 
-uint16_t build_msg_header(uint16_t set_id, uint16_t length, uint16_t seq_num) {
-
-	uint16_t header_len;
+void build_msg_header(uint8_t* buf, uint16_t set_id, uint16_t length, uint16_t seq_num) {
 
 	//basic checks
 	if(set_id > MAX_SET_ID || seq_num > MAX_SEQ_NUM || length > MAX_MSG_SIZE)
-		return -1;
+		return;
 
 	//zeroing out, can't rely on zero in mem
-	template_buf[0] = 0;
+	buf[0] = 0;
 
 	if(set_id == TEMPLATE_SET_ID) {
 		set_id = 1;
@@ -77,44 +74,38 @@ uint16_t build_msg_header(uint16_t set_id, uint16_t length, uint16_t seq_num) {
 	}
 
 	if(set_id < 16) {
-		template_buf[0] |= (set_id << 2);
+		buf[0] |= (set_id << 2);
 	}
 
-	length += (3 + EXTENDED_HEADER_SET_ID + EXTENDED_HEADER_SEQ);
-	template_buf[0] |= (uint8_t)(length >> 8);
-	template_buf[1] = (uint8_t)(length);
+	length += MSG_HEADER_SIZE;
+	buf[0] |= (uint8_t)(length >> 8);
+	buf[1] = (uint8_t)(length);
 
-	template_buf[2] = (uint8_t)(seq_num);
+	buf[2] = (uint8_t)(seq_num);
 
-	if(EXTENDED_HEADER_SET_ID == 0 && EXTENDED_HEADER_SEQ == 0) {
+	if(MSG_HEADER_SIZE == 3) {
 
 	} else if(EXTENDED_HEADER_SET_ID == 0 && EXTENDED_HEADER_SEQ == 1) {
 
-		template_buf[0] |= 0x40;
-		template_buf[2] = (uint8_t)(seq_num >> 8);
-		template_buf[3] = (uint8_t)(seq_num);
+		buf[0] |= 0x40;
+		buf[2] = (uint8_t)(seq_num >> 8);
+		buf[3] = (uint8_t)(seq_num);
 	} else if(EXTENDED_HEADER_SET_ID == 1 && EXTENDED_HEADER_SEQ == 0) {
 
-		template_buf[0] |= 0x80;
-		template_buf[0] |= ((set_id >> 8) << 2);
-		template_buf[3] = (uint8_t)(set_id);
+		buf[0] |= 0x80;
+		buf[0] |= ((set_id >> 8) << 2);
+		buf[3] = (uint8_t)(set_id);
 
-	} else {
+	} else if(MSG_HEADER_SIZE == 5) {
 
-		template_buf[0] |= 0xc0;
+		buf[0] |= 0xc0;
 
-		template_buf[0] |= ((set_id >> 8) << 2);
-		template_buf[4] = (uint8_t)(set_id);
+		buf[0] |= ((set_id >> 8) << 2);
+		buf[4] = (uint8_t)(set_id);
 
-		template_buf[2] = (uint8_t)(seq_num >> 8);
-		template_buf[3] = (uint8_t)(seq_num);
+		buf[2] = (uint8_t)(seq_num >> 8);
+		buf[3] = (uint8_t)(seq_num);
 	}
-
-	header_len = 3;
-	header_len += (EXTENDED_HEADER_SET_ID + EXTENDED_HEADER_SEQ);
-
-
-	return header_len;
 }
 
  void build_template(void) {
@@ -123,7 +114,7 @@ uint16_t build_msg_header(uint16_t set_id, uint16_t length, uint16_t seq_num) {
 	uint16_t element_id, field_len;
 	uint32_t enterprise_num;
 
-	uint16_t template_size = 0, template_tmp_len;
+	uint16_t template_size = 0, template_tmp_len = MSG_HEADER_SIZE;
 
 	//calculate length first to be able to build the message header
 	for(i = 0; i < NUM_ENTRIES; i++) {
@@ -135,7 +126,7 @@ uint16_t build_msg_header(uint16_t set_id, uint16_t length, uint16_t seq_num) {
 
 	template_size += 4*NUM_ENTRIES;
 
-	template_tmp_len = build_msg_header(TEMPLATE_SET_ID, template_size, 0xFFFF);
+	build_msg_header(template_buf, TEMPLATE_SET_ID, template_size, 0xFFFF);
 
 	//get template length by counting fields with respect to set enterprise bit
 	for(i = 0; i < NUM_ENTRIES; i++) {
@@ -168,21 +159,64 @@ void build_data_header(void) {
 		data_size += sensor[i].field_len;
 	}
 
-	data_tmp_len = build_msg_header(DATA_SET_ID, data_size, data_seq_num);
-
-	uint8_t field[sensor[0].field_len];
-
-	sensor[0].sens_val(field);
-
-
-
-	printf("\n\n%d\n\n", *((uint16_t*)(field)));
-
-
+	build_msg_header(data_buf, DATA_SET_ID, data_size, data_seq_num);
 }
 
 void build_data_payload(void) {
 
+	uint8_t i, val8;
+	uint16_t val16;
+	uint32_t val32;
+	uint64_t val64;
+
+	uint16_t data_tmp_len = MSG_HEADER_SIZE;
+
+	//adjust the sequence number without rebuilding the header!
+	data_seq_num++;
+	if(EXTENDED_HEADER_SEQ == 1) {
+		if(data_seq_num == 65535)
+			data_seq_num = 0;
+
+		data_buf[2] = (uint8_t)(data_seq_num >> 8);
+		data_buf[3] = (uint8_t)(data_seq_num);
+	} else {
+		if(data_seq_num == 255) {
+			data_seq_num = 0;
+		}
+		data_buf[2] = (uint8_t)(data_seq_num);
+	}
+	//
+
+
+	for(i = 0; i < NUM_ENTRIES; i++) {
+
+		switch(sensor[i].field_len) {
+
+			case 1:
+				sensor[i].sens_val(&val8);
+				memcpy(&data_buf[data_tmp_len], &val8, sizeof(uint8_t));
+				data_tmp_len += sizeof(uint8_t);
+				break;
+			case 2:
+				sensor[i].sens_val(&val16);
+				val16 = SWITCH_ENDIAN_16(val16);
+				memcpy(&data_buf[data_tmp_len], &val16, sizeof(uint16_t));
+				data_tmp_len += sizeof(uint16_t);
+				break;
+			case 4:
+				sensor[i].sens_val(&val32);
+				val32 = SWITCH_ENDIAN_32(val32);
+				memcpy(&data_buf[data_tmp_len], &val32, sizeof(uint32_t));
+				data_tmp_len += sizeof(uint32_t);
+				break;
+			case 8:
+				sensor[i].sens_val(&val64);
+				val64 = SWITCH_ENDIAN_64(val64);
+				memcpy(&data_buf[data_tmp_len], &val64, sizeof(uint64_t));
+				data_tmp_len += sizeof(uint64_t);
+				break;
+		}
+	}
 }
 
 uint8_t *get_template(void) {
@@ -190,6 +224,14 @@ uint8_t *get_template(void) {
 }
 
 uint8_t *get_data(void) {
+
+	uint8_t i;
+	build_data_payload();
+
+	for(i = 0; i < 100; i++) {
+		printf("0x%02x ", data_buf[i]);
+	}
+	printf("\n\n");
 
 	return data_buf;
 }

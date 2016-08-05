@@ -28,7 +28,7 @@ struct template_rec *init_template() {
 	sky_rec[4] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
 	sky_rec[5] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
 	sky_rec[6] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
-	sky_rec[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_light_total);
+	sky_rec[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_pull);
 
 	return sky_rec;
 }
@@ -100,5 +100,5 @@ void read_id(void* id) {
 //0 corresponds to push, 1 corresponds to pull
 void read_pull(void *pull) {
 
-	*((uint8_t *)(pull)) = 0;
+	*((uint8_t *)(pull)) = 1;
 }
