@@ -3,8 +3,6 @@
 #include "dev/leds.h"
 #include "networking/networking.h"
 
-#include <stdio.h>
-
 #include "TinyIPFIX/tinyipfix.h"
 
 struct template_rec *sky_rec;
@@ -28,8 +26,8 @@ PROCESS_THREAD(main_proc, ev, data)
   initialize();
 
   // Set event timers for template and data packet creation
-  etimer_set(&template_timer, CLOCK_SECOND*9);
-  etimer_set(&data_timer, CLOCK_SECOND*3);
+  etimer_set(&template_timer, CLOCK_SECOND*15);
+  etimer_set(&data_timer, CLOCK_SECOND*5);
 
   while (1) {
 

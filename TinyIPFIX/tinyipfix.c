@@ -1,7 +1,5 @@
 #include "tinyipfix.h"
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 //here comes the choosing of the sensor
 #include "../hw_module/sky.h"
@@ -38,6 +36,8 @@ void build_template(void);
 void build_data_payload(void);
 void build_data_header(void);
 
+uint8_t is_initialized = 0;
+
 uint8_t template_buf[MAX_MSG_SIZE];
 
 uint8_t data_buf[MAX_MSG_SIZE];
@@ -55,6 +55,8 @@ void initialize(void) {
 	//fixed at compile time: template/data header and template payload, only do it once
 	build_template(); //header and payload
 	build_data_header();
+
+	is_initialized = 1;
 
 }
 
@@ -114,6 +116,9 @@ void build_msg_header(uint8_t* buf, uint16_t set_id, uint16_t length, uint16_t s
 	uint16_t element_id, field_len;
 	uint32_t enterprise_num;
 
+	uint16_t ref_set_id = DATA_SET_ID;
+	uint16_t field_count = NUM_ENTRIES;
+
 	uint16_t template_size = 0, template_tmp_len = MSG_HEADER_SIZE;
 
 	//calculate length first to be able to build the message header
@@ -124,27 +129,38 @@ void build_msg_header(uint8_t* buf, uint16_t set_id, uint16_t length, uint16_t s
 		}
 	}
 
+	//payload
 	template_size += 4*NUM_ENTRIES;
+	//set header
+	template_size += SET_HEADER_SIZE;
 
 	build_msg_header(template_buf, TEMPLATE_SET_ID, template_size, 0xFFFF);
+
+	ref_set_id = SWITCH_ENDIAN_16(ref_set_id);
+	field_count = SWITCH_ENDIAN_16(field_count);
+
+	memcpy(&template_buf[template_tmp_len], &ref_set_id, sizeof(ref_set_id));
+	template_tmp_len += sizeof(ref_set_id);
+	memcpy(&template_buf[template_tmp_len], &field_count, sizeof(field_count));
+	template_tmp_len += sizeof(ref_set_id);
 
 	//get template length by counting fields with respect to set enterprise bit
 	for(i = 0; i < NUM_ENTRIES; i++) {
 
 		element_id = SWITCH_ENDIAN_16(sensor[i].element_id);
 		memcpy(&template_buf[template_tmp_len], &element_id, sizeof(element_id));
-		template_tmp_len += 2;
+		template_tmp_len += sizeof(element_id);
 
 		field_len = SWITCH_ENDIAN_16(sensor[i].field_len);
 		memcpy(&template_buf[template_tmp_len], &field_len, sizeof(field_len));
-		template_tmp_len += 2;
+		template_tmp_len += sizeof(field_len);
 
 		//check if E_BIT is set
 		if( ((sensor[i].element_id) | 0x8000) == sensor[i].element_id) {
 
 			enterprise_num = SWITCH_ENDIAN_32(sensor[i].enterprise_num);
 			memcpy(&template_buf[template_tmp_len], &enterprise_num, sizeof(enterprise_num));
-			template_tmp_len += 4;
+			template_tmp_len += sizeof(enterprise_num);
 		}
 	}
 }
@@ -174,19 +190,18 @@ void build_data_payload(void) {
 	//adjust the sequence number without rebuilding the header!
 	data_seq_num++;
 	if(EXTENDED_HEADER_SEQ == 1) {
-		if(data_seq_num > 65535)
+		if(data_seq_num > MAX_SEQ_LARGE)
 			data_seq_num = 0;
 
 		data_buf[2] = (uint8_t)(data_seq_num >> 8);
 		data_buf[3] = (uint8_t)(data_seq_num);
 	} else {
-		if(data_seq_num > 255) {
+		if(data_seq_num > MAX_SEQ_SMALL) {
 			data_seq_num = 0;
 		}
 		data_buf[2] = (uint8_t)(data_seq_num);
 	}
 	//
-
 
 	for(i = 0; i < NUM_ENTRIES; i++) {
 
@@ -220,10 +235,17 @@ void build_data_payload(void) {
 }
 
 uint8_t *get_template(void) {
+
+	if(!is_initialized)
+		return NULL;
+
 	return template_buf;
 }
 
 uint8_t *get_data(void) {
+
+	if(!is_initialized)
+		return NULL;
 
 	build_data_payload();
 

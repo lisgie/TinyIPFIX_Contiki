@@ -9,8 +9,13 @@
 #define MAX_SET_ID 4095
 #define MAX_SEQ_NUM 65535
 
+#define MAX_SEQ_SMALL 255
+#define MAX_SEQ_LARGE 65535
+
 #define TEMPLATE_SET_ID 2
 #define DATA_SET_ID 256
+
+#define SET_HEADER_SIZE 4
 
 struct template_rec {
 
