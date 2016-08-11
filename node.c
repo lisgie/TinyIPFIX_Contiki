@@ -20,6 +20,7 @@ PROCESS_THREAD(main_proc, ev, data)
   PROCESS_BEGIN();
 
   if(conn_set_up() == -1) {
+	  leds_on(LEDS_RED);
 	  PROCESS_EXIT();
   }
 
