@@ -1,5 +1,3 @@
-#include <stdint.h>
-
 #ifndef SKY_H_
 #define SKY_H_
 

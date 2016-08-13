@@ -1,13 +1,24 @@
+//This include specifies the corresponding platform
 #include "sky.h"
+
+#include <stdint.h>
+
 #include "../TinyIPFIX/tinyipfix.h"
 
-#include "dev/sht11-sensor.h"
-#include "dev/light-sensor.h"
-#include "dev/battery-sensor.h"
 #include "net/uip.h"
 
+#include "dev/button-sensor.h"
+//Temperature/Humidity sensor
+#include "dev/sht11-sensor.h"
+//Light sensor
+#include "dev/light-sensor.h"
+//Button sensor
+#include "dev/battery-sensor.h"
 
+//Initialising struct, used to fill records with relevant data
 struct template_rec set_fields(uint8_t, uint16_t, uint16_t, uint32_t, void(*sens_val)(void*));
+
+//Every data record to be sent has to be read by a specified function
 void read_temp(void*);
 void read_humid(void*);
 void read_light_photo(void*);
@@ -17,20 +28,22 @@ void read_time(void*);
 void read_id(void*);
 void read_pull(void*);
 
-struct template_rec sky_rec[NUM_ENTRIES];
+//Main datastructure, struct array of type template_rec
+struct template_rec records[NUM_ENTRIES];
 
+//Values are defined in [platform].h
 struct template_rec *init_template() {
 
-	sky_rec[0] = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
-	sky_rec[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID, &read_humid);
-	sky_rec[2] = set_fields(E_BIT_LIGHT_PHOTO, ELEMENT_ID_LIGHT_PHOTO, LEN_LIGHT_PHOTO, ENTERPRISE_ID_LIGHT_PHOTO, &read_light_photo);
-	sky_rec[3] = set_fields(E_BIT_LIGHT_TOTAL, ELEMENT_ID_LIGHT_TOTAL, LEN_LIGHT_TOTAL, ENTERPRISE_ID_LIGHT_TOTAL, &read_light_total);
-	sky_rec[4] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
-	sky_rec[5] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
-	sky_rec[6] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
-	sky_rec[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_pull);
+	records[0] = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
+	records[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID, &read_humid);
+	records[2] = set_fields(E_BIT_LIGHT_PHOTO, ELEMENT_ID_LIGHT_PHOTO, LEN_LIGHT_PHOTO, ENTERPRISE_ID_LIGHT_PHOTO, &read_light_photo);
+	records[3] = set_fields(E_BIT_LIGHT_TOTAL, ELEMENT_ID_LIGHT_TOTAL, LEN_LIGHT_TOTAL, ENTERPRISE_ID_LIGHT_TOTAL, &read_light_total);
+	records[4] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
+	records[5] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
+	records[6] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
+	records[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_pull);
 
-	return sky_rec;
+	return records;
 }
 
 struct template_rec set_fields(uint8_t e_bit, uint16_t element_id,
@@ -42,14 +55,18 @@ struct template_rec set_fields(uint8_t e_bit, uint16_t element_id,
 	rec.field_len = field_len;
 	rec.enterprise_num = enterprise_id;
 
+	//The first bit of the field_id is reserved for the enterprise bit
+	//0 = no enterprise bit set, 1 = enterprise bit set
 	if(e_bit == 1)
 		rec.element_id |= 0x8000;
 
+	//Setting the function pointer
 	rec.sens_val = sens_val;
 
 	return rec;
 }
 
+//FUNCTIONS TO READ VALUES ---------------------------------------
 void read_temp(void* temp) {
 
 	SENSORS_ACTIVATE(sht11_sensor);
@@ -102,3 +119,4 @@ void read_pull(void *pull) {
 
 	*((uint8_t *)(pull)) = 1;
 }
+//END OF FUNCTIONS TO READ VALUES --------------------------------

@@ -17,6 +17,8 @@
 
 #define SET_HEADER_SIZE 4
 
+#define PULL_FLAG 1
+
 struct template_rec {
 
 	//the enterprise bit will be the MSB of element_id, to not waste another byte
@@ -27,7 +29,7 @@ struct template_rec {
 	void (* sens_val)(void*);
 };
 
-void initialize(void);
+uint8_t initialize_tinyipfix(void);
 uint8_t *get_template(void);
 uint8_t *get_data(void);
 
