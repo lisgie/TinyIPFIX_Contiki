@@ -3,3 +3,6 @@
 
 #undef UIP_CONF_TCP
 #define UIP_CONF_TCP 0
+
+#undef NETSTACK_CONF_RDC
+#define NETSTACK_CONF_RDC nullrdc_driver
