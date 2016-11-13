@@ -7,8 +7,8 @@
 #include "TinyIPFIX/tinyipfix.h"
 #include "networking/networking.h"
 
-#define TEMPLATE_INTERVAL 17
-#define DATA_INTERVAL 5
+#define TEMPLATE_INTERVAL 180
+#define DATA_INTERVAL 40
 
 PROCESS(main_proc, "Main Process");
 AUTOSTART_PROCESSES(&main_proc);
@@ -52,6 +52,7 @@ PROCESS_THREAD(main_proc, ev, data)
 			leds_on (LEDS_BLUE);
 			clock_delay (500);
 			leds_off (LEDS_BLUE);
+
 
 			send_msg(buffer, buffer[1]);
 

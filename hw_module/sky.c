@@ -37,11 +37,11 @@ struct template_rec *init_template() {
 	records[0] = set_fields(E_BIT_TEMP, ELEMENT_ID_TEMP, LEN_TEMP, ENTERPRISE_ID_TEMP, &read_temp);
 	records[1] = set_fields(E_BIT_HUMID, ELEMENT_ID_HUMID, LEN_HUMID, ENTERPRISE_ID_HUMID, &read_humid);
 	records[2] = set_fields(E_BIT_LIGHT_PHOTO, ELEMENT_ID_LIGHT_PHOTO, LEN_LIGHT_PHOTO, ENTERPRISE_ID_LIGHT_PHOTO, &read_light_photo);
-	records[3] = set_fields(E_BIT_LIGHT_TOTAL, ELEMENT_ID_LIGHT_TOTAL, LEN_LIGHT_TOTAL, ENTERPRISE_ID_LIGHT_TOTAL, &read_light_total);
-	records[4] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
-	records[5] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
-	records[6] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
-	records[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_pull);
+	//records[3] = set_fields(E_BIT_LIGHT_TOTAL, ELEMENT_ID_LIGHT_TOTAL, LEN_LIGHT_TOTAL, ENTERPRISE_ID_LIGHT_TOTAL, &read_light_total);
+	records[3] = set_fields(E_BIT_BATTERY, ELEMENT_ID_BATTERY, LEN_BATTERY, ENTERPRISE_ID_BATTERY, &read_battery);
+	records[4] = set_fields(E_BIT_TIME, ELEMENT_ID_TIME, LEN_TIME, ENTERPRISE_ID_TIME, &read_time);
+	records[5] = set_fields(E_BIT_ID, ELEMENT_ID_ID, LEN_ID, ENTERPRISE_ID_ID, &read_id);
+	//records[7] = set_fields(E_BIT_PULL, ELEMENT_ID_PULL, LEN_PULL, ENTERPRISE_ID_PULL, &read_pull);
 
 	return records;
 }

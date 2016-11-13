@@ -1,7 +1,7 @@
 #ifndef SKY_H_
 #define SKY_H_
 
-#define NUM_ENTRIES 8
+#define NUM_ENTRIES 6
 
 //SHT11 Temperature Sensor
 #define ELEMENT_ID_TEMP 0x80A0
@@ -22,10 +22,10 @@
 #define LEN_LIGHT_PHOTO 2
 
 //S1087-01 Light Sensor
-#define ELEMENT_ID_LIGHT_TOTAL 0x80A3
-#define ENTERPRISE_ID_LIGHT_TOTAL 0xF0AA00AA
-#define E_BIT_LIGHT_TOTAL 1
-#define LEN_LIGHT_TOTAL 2
+//#define ELEMENT_ID_LIGHT_TOTAL 0x80A3
+//#define ENTERPRISE_ID_LIGHT_TOTAL 0xF0AA00AA
+//#define E_BIT_LIGHT_TOTAL 1
+//#define LEN_LIGHT_TOTAL 2
 
 //2xAA Batteries
 #define ELEMENT_ID_BATTERY 0x80A4
@@ -46,10 +46,10 @@
 #define LEN_ID 2
 
 //Possible future extension, pull flag
-#define ELEMENT_ID_PULL 0x80A7
-#define ENTERPRISE_ID_PULL 0xF0AA00AA
-#define E_BIT_PULL 1
-#define LEN_PULL 1
+//#define ELEMENT_ID_PULL 0x80A7
+//#define ENTERPRISE_ID_PULL 0xF0AA00AA
+//#define E_BIT_PULL 1
+//#define LEN_PULL 1
 
 //this is needed as changeable header option for the data sets
 #define EXTENDED_HEADER_SEQ 0
